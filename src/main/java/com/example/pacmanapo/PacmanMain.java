@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -14,12 +15,14 @@ import java.util.ArrayList;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.util.Duration;
+
 public class PacmanMain extends Application {
     GraphicsContext gc;
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws IOException, InterruptedException {
         Board b = new Board(9, 9);
-        Mario mario = new Mario(1, 3, 0, 0);
+        Mario mario = new Mario(4, 3, 0, 0);
         Carapace carapace = new Carapace(250,250,1, "rouge");
         ArrayList <Mur> murs = new ArrayList<>();
         //for (int i = 0; i < 20; i++) {
@@ -56,21 +59,98 @@ public class PacmanMain extends Application {
         //Draw the board
         Canvas canvas = new Canvas(500, 500);
         gc = canvas.getGraphicsContext2D();
-        gc.setFill(javafx.scene.paint.Color.BLACK);
+        gc.setFill(Color.BLACK);
         gc.fillRect(0, 0 , 500, 500);
         final long startNanoTime = System.nanoTime();
-
-        new AnimationTimer()
-        {
-            public void handle(long currentNanoTime)
-            {
+        mario.setX(25);
+        mario.setY(25+mario.height);
+        //To fix the framerate we do:
+        AnimationTimer timer =  new AnimationTimer() {
+            @Override
+            public void handle(long currentNanoTime) {
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
-                gc.setFill(javafx.scene.paint.Color.BLACK);
+                gc.setFill(Color.BLACK);
                 gc.fillRect(0, 0, 500, 500);
-                mario.move();
+                System.out.println("x: " + mario.getX());
+                System.out.println("y: " + mario.getY());
+                switch (mario.getDirection()) {
+                    case 0:
+                        //DOWN
+                        //Check if the next position is a wall
+                        if (mario.getY() + mario.height < 500) {
+                            boolean isWall = false;
+                            for (Mur mur : murs) {
+                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() + mur.getWidth() && mario.getY() + mario.height + mario.getSpeed() > mur.getY() && mario.getY() + mario.height < mur.getY() + mur.getHeight()) {
+                                    isWall = true;
+                                }
+                            }
+                            if (!isWall) {
+                                mario.setY(mario.getY() + mario.getSpeed());
+                            }
+                        }
+                        //mario.setY(mario.getY() + mario.getSpeed());
+                        break;
+                    case 1:
+                        //UP
+                        if (mario.getY() > 0) {
+                            boolean isWall = false;
+                            for (Mur mur : murs) {
+                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() + mur.getWidth() && mario.getY() - mario.getSpeed() < mur.getY() + mur.getHeight() && mario.getY() > mur.getY()) {
+                                    isWall = true;
+                                }
+                            }
+                            if (!isWall) {
+                                mario.setY(mario.getY() - mario.getSpeed());
+                            }
+                        }
+
+                        //mario.setY(mario.getY() - mario.getSpeed());
+                        break;
+                    case 2:
+                        //LEFT
+                        if (mario.getX() - mario.getSpeed() > 0) {
+                            boolean isWall = false;
+                            for (Mur mur : murs) {
+                                if (mario.getX() - mario.getSpeed() < mur.getX() + mur.getWidth() && mario.getX() > mur.getX() && mario.getY() + mario.height > mur.getY() && mario.getY() < mur.getY() + mur.getHeight()) {
+                                    isWall = true;
+                                }
+                            }
+                            if (!isWall) {
+                                mario.setX(mario.getX() - mario.getSpeed());
+                            }
+                        }
+                        //mario.setX(mario.getX() - mario.getSpeed());
+                        break;
+                    case 3:
+                        //RIGHT
+                        if (mario.getX() + mario.width < 500) {
+                            boolean isWall = false;
+                            for (Mur mur : murs) {
+                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() && mario.getY() + mario.height > mur.getY() && mario.getY() < mur.getY() + mur.getHeight()) {
+                                    isWall = true;
+                                }
+                            }
+                            if (!isWall) {
+                                mario.setX(mario.getX() + mario.getSpeed());
+                            }
+                        }
+                        //mario.setX(mario.getX() + mario.getSpeed());
+                        break;
+                }
+
                 carapace.move();
+                //Wait for having only 40 fps
+                try {
+                    Thread.sleep(80);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }.start();
+
+        };
+        //timer.setCycleDuration(Duration.millis(1000.0 / 40.0));
+        //Set the framerate to 40 fps
+        timer.start();
         root.getChildren().add(canvas);
         root.getChildren().add(mario.Box);
         root.getChildren().add(carapace.Box);

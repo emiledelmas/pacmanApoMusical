@@ -70,37 +70,13 @@ class Mario {
         return (int) (Box.getLayoutX()+200);
     }
     public int getY() {
-        return (int) Box.getLayoutY()+250;
+        return (int) Box.getLayoutY()+225;
     }
     public void setX(int x) {
         Box.setLayoutX(x-200);
     }
     public void setY(int y) {
-        Box.setLayoutY(y-250);
-    }
-    public void move(){
-        //print getX and getY
-        //System.out.println("X: "+getX()+" Y: "+getY());
-        //print width and height
-        //System.out.println("Width: "+width+" Height: "+height);
-        switch (direction) {
-            case 0:
-                if (getY() < 500)
-                    setY(getY() + speed);
-                break;
-            case 1:
-                if (getY()-height > 0)
-                    setY(getY() - speed);
-                break;
-            case 2:
-                if (getX() > 0)
-                    setX(getX() - speed);
-                break;
-            case 3:
-                if (getX()+width < 500)
-                    setX(getX() + speed);
-                break;
-        }
+        Box.setLayoutY(y-225);
     }
     public void handleDirection(KeyEvent e){
         switch (e.getCode()) {

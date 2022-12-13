@@ -19,13 +19,14 @@ public class Mur {
         Box.getChildren().add(imageView);
         width = (int) (image.getWidth());
         height = (int) (image.getHeight());
-        System.out.println(width);
+        //System.out.println(width);
         setX(x);
         setY(y);
     }
 
     public int getX() {
         return x;
+
     }
 
     public void setX(int x) {
