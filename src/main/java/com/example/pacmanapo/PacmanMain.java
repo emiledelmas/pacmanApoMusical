@@ -22,8 +22,9 @@ public class PacmanMain extends Application {
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
         Board b = new Board(9, 9);
-        Mario mario = new Mario(4, 3, 0, 0);
-        Carapace carapace = new Carapace(250,250,1, "rouge");
+        Mario mario = new Mario(1, 3, 0, -1);
+        //Carapace carapace = new Carapace(250,250,1, "rouge");
+        ArrayList <Carapace> carapaces = new ArrayList<>();
         ArrayList <Mur> murs = new ArrayList<>();
         //for (int i = 0; i < 20; i++) {
         //    murs.add(new Mur(25*i, 0));
@@ -51,7 +52,16 @@ public class PacmanMain extends Application {
                 }
             }
         }
-
+        for (int i=0;i<3; i++) {
+            carapaces.add(new Carapace( 1, "rouge",-1));
+        }
+        //for carapace in carapaces
+        int i=0;
+        for (Carapace carapace : carapaces) {
+            carapace.setX(225+25*i);
+            carapace.setY(275);
+            i++;
+        }
 
         //Mur mur = new Mur(50, 50, 0, 0);
 
@@ -62,8 +72,6 @@ public class PacmanMain extends Application {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0 , 500, 500);
         final long startNanoTime = System.nanoTime();
-        mario.setX(25);
-        mario.setY(25+mario.height);
         //To fix the framerate we do:
         AnimationTimer timer =  new AnimationTimer() {
             @Override
@@ -71,79 +79,17 @@ public class PacmanMain extends Application {
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
                 gc.setFill(Color.BLACK);
                 gc.fillRect(0, 0, 500, 500);
-                System.out.println("x: " + mario.getX());
-                System.out.println("y: " + mario.getY());
-                switch (mario.getDirection()) {
-                    case 0:
-                        //DOWN
-                        //Check if the next position is a wall
-                        if (mario.getY() + mario.height < 500) {
-                            boolean isWall = false;
-                            for (Mur mur : murs) {
-                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() + mur.getWidth() && mario.getY() + mario.height + mario.getSpeed() > mur.getY() && mario.getY() + mario.height < mur.getY() + mur.getHeight()) {
-                                    isWall = true;
-                                }
-                            }
-                            if (!isWall) {
-                                mario.setY(mario.getY() + mario.getSpeed());
-                            }
-                        }
-                        //mario.setY(mario.getY() + mario.getSpeed());
-                        break;
-                    case 1:
-                        //UP
-                        if (mario.getY() > 0) {
-                            boolean isWall = false;
-                            for (Mur mur : murs) {
-                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() + mur.getWidth() && mario.getY() - mario.getSpeed() < mur.getY() + mur.getHeight() && mario.getY() > mur.getY()) {
-                                    isWall = true;
-                                }
-                            }
-                            if (!isWall) {
-                                mario.setY(mario.getY() - mario.getSpeed());
-                            }
-                        }
-
-                        //mario.setY(mario.getY() - mario.getSpeed());
-                        break;
-                    case 2:
-                        //LEFT
-                        if (mario.getX() - mario.getSpeed() > 0) {
-                            boolean isWall = false;
-                            for (Mur mur : murs) {
-                                if (mario.getX() - mario.getSpeed() < mur.getX() + mur.getWidth() && mario.getX() > mur.getX() && mario.getY() + mario.height > mur.getY() && mario.getY() < mur.getY() + mur.getHeight()) {
-                                    isWall = true;
-                                }
-                            }
-                            if (!isWall) {
-                                mario.setX(mario.getX() - mario.getSpeed());
-                            }
-                        }
-                        //mario.setX(mario.getX() - mario.getSpeed());
-                        break;
-                    case 3:
-                        //RIGHT
-                        if (mario.getX() + mario.width < 500) {
-                            boolean isWall = false;
-                            for (Mur mur : murs) {
-                                if (mario.getX() + mario.width > mur.getX() && mario.getX() < mur.getX() && mario.getY() + mario.height > mur.getY() && mario.getY() < mur.getY() + mur.getHeight()) {
-                                    isWall = true;
-                                }
-                            }
-                            if (!isWall) {
-                                mario.setX(mario.getX() + mario.getSpeed());
-                            }
-                        }
-                        //mario.setX(mario.getX() + mario.getSpeed());
-                        break;
-                }
-
-                carapace.move();
-                //Wait for having only 40 fps
-                try {
-                    Thread.sleep(80);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                //System.out.println("x: " + mario.getX());
+                //System.out.println("y: " + mario.getY());
+                //System.out.println(mario.lastDirection != mario.getDirection());
+                //System.out.println(mario.isWall(murs,mario.getDirection()));
+                //System.out.println("next Direction: " + mario.nextDirection);
+                //System.out.println("Direction: " + mario.getDirection());
+               mario.move(murs, carapaces);
+                //carapace.move();
+                for (Carapace c : carapaces) {
+                    c.move(murs, carapaces);
+                    //System.out.println("Direction : "+c.getDirection());
                 }
             }
 
@@ -152,18 +98,26 @@ public class PacmanMain extends Application {
         //Set the framerate to 40 fps
         timer.start();
         root.getChildren().add(canvas);
-        root.getChildren().add(mario.Box);
-        root.getChildren().add(carapace.Box);
+        //root.getChildren().add(carapace.Box);
         root.getChildren().add(mediaView);
         for (Mur mur : murs) {
             root.getChildren().add(mur.Box);
+        }
+        root.getChildren().add(mario.Box);
+        for (Carapace c : carapaces) {
+            root.getChildren().add(c.Box);
         }
         //root.getChildren().add(mur.Box);
 
         Scene scene = new Scene(root, 500, 500);
         scene.setOnKeyPressed(event -> {
-            mario.handleDirection(event);
-            carapace.changeDirection();
+            mario.handleDirection(event,murs);
+
+            //carapace.changeDirection();
+            for (Carapace c : carapaces) {
+                if (c.getDirection() == -1)
+                c.changeDirection(murs);
+            }
         });
         stage.setTitle("PACMARIO");
         stage.setScene(scene);

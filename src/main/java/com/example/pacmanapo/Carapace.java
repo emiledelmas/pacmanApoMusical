@@ -10,90 +10,41 @@ import javafx.scene.layout.HBox;
  *
  * @author camille
  */
-public class Carapace
+public class Carapace extends Personnage
 {
     //attribut
-    private int speed;
-    private int direction;
-    public HBox Box = new HBox();
     private String couleur;
     private Image image;
     private ImageView imageView;
 
     private int width;
     private int height;
-    private double scale;
-    private int x;
-    private int y;
+    private double scaleX;
+    private double scaleY;
     //constructeur
-    public Carapace(int x, int y,int speed, String couleur){
+    public Carapace(int speed, String couleur,int direction){
         this.speed=speed;
         this.couleur=couleur;
-        this.x = x;
-        this.y = y;
+        this.direction=direction;
         //load la bonne image selon la couleur de la carapace
         if(couleur.equals("rouge")){
-            image = new Image("file:src/main/java/com/example/pacmanapo/carapace.png");
-            scale = 0.08;
+            image = new Image("file:src/main/java/com/example/pacmanapo/carapace25.png");
+            scaleX = 1.0;
+            scaleY = 1.0;
         }
         else {
             image = new Image("file:src/main/java/com/example/pacmanapo/carapaceverte.png");
-            scale = 0.15;
+            scaleX = 0.094;
+            scaleY = 0.182;
         }
         imageView = new ImageView(image);
         Box.getChildren().add(imageView);
-        Box.setScaleX(scale);
-        Box.setScaleY(scale);
-        width = (int) (image.getWidth() * 0.05);
-        height = (int) (image.getHeight() * 0.05);
-    }
-
-    /**
-     * @return the speed
-     */
-    public int getSpeed()
-    {
-        return speed;
-    }
-
-    /**
-     * @param speed the speed to set
-     */
-    public void setSpeed(int speed)
-    {
-        this.speed = speed;
-    }
-
-    /**
-     * @return the direction
-     */
-    public int getDirection()
-    {
-        return direction;
-    }
-
-    /**
-     * @param direction the direction to set
-     */
-    public void setDirection(int direction)
-    {
-        this.direction = direction;
-    }
-
-    /**
-     * @return the contenant
-     */
-    public HBox getContenant()
-    {
-        return Box;
-    }
-
-    /**
-     * @param contenant the contenant to set
-     */
-    public void setContenant(HBox Box)
-    {
-        this.Box = Box;
+        //Box.setScaleX(scaleX);
+        //Box.setScaleY(scaleY);
+        width = (int) (image.getWidth() * scaleX);
+        height = (int) (image.getHeight() * scaleY);
+        //width = (int) (image.getWidth() * 0.05);
+        //height = (int) (image.getHeight() * 0.05);
     }
 
     /**
@@ -111,72 +62,67 @@ public class Carapace
     {
         this.couleur = couleur;
     }
-
-    /**
-     * @return the image
-     */
-    public Image getImage()
-    {
-        return image;
+    public int getX() {
+        return (int) (Box.getLayoutX());
+    }
+    public int getY() {
+        return (int) Box.getLayoutY();
+    }
+    public void setX(int x) {
+        if (x<-25){
+            x=525;
+        }
+        else if (x>525){
+            x=-25;
+        }
+        Box.setLayoutX(x);
+    }
+    public void setY(int y) {
+        Box.setLayoutY(y);
     }
 
-    /**
-     * @param image the image to set
-     */
-    public void setImage(Image image)
-    {
-        this.image = image;
-    }
-    //mettre image dans HBox ?
-
-    public void setX(int x){
-
-        Box.setLayoutX(x-200);
-    }
-
-    public void setY(int y){
-
-        Box.setLayoutY(y-250);
-    }
-
-    public int getX(){
-
-        return (int) Box.getLayoutX()+200;
-    }
-    public int getY(){
-
-        return (int) Box.getLayoutY()+250;
-    }
-
-    public void changeDirection(){
+    public void changeDirection(ArrayList<Mur> murs){
         Random rd = new Random();
         //rd.nextInt(5);
         int direction = rd.nextInt(4);
+        while (isWall(murs, direction)){
+            direction = rd.nextInt(4);
+        }
         //System.out.println("Direction "+direction);
         setDirection(direction);
     }
-    public void move(){
-        //print getX and getY
-        //System.out.println("X: "+getX()+" Y: "+getY());
-        //print width and height
-        //System.out.println("Width: "+width+" Height: "+height);
-        switch (direction) {
-            case 0:
-                if (getY() < 500)
-                    setY(getY() + speed);
-                break;
-            case 1:
-                if (getY()-height > 0)
-                    setY(getY() - speed);
-                break;
-            case 2:
-                if (getX() > 0)
-                    setX(getX() - speed);
-                break;
-            case 3:
-                if (getX()+width < 500)
-                    setX(getX() + speed);
-                break;
+    public void move(ArrayList<Mur> murs,ArrayList<Carapace> carapaces){
+        System.out.println("Direction "+direction);
+        System.out.println("X "+getX());
+        System.out.println("Y "+getY());
+        if (!isWall(murs, direction)) {
+            switch (direction) {
+                case 0:
+                    //DOWN
+                    //Check if the next position is a wall
+                    setY(getY() + getSpeed());
+                    //mario.setY(mario.getY() + mario.getSpeed());
+                    break;
+
+                case 1:
+                    //UP
+                    setY(getY() - getSpeed());
+                    //mario.setY(mario.getY() - mario.getSpeed());
+                    break;
+                case 2:
+                    //LEFT
+                    setX(getX() - getSpeed());
+                    //mario.setX(mario.getX() - mario.getSpeed());
+                    break;
+                case 3:
+                    //RIGHT
+                    setX(getX() + getSpeed());
+                    //mario.setX(mario.getX() + mario.getSpeed());
+                    break;
+            }
+        }
+        else {
+            changeDirection(murs);
         }
     }
 }
