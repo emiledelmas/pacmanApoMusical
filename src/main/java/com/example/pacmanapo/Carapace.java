@@ -39,12 +39,8 @@ public class Carapace extends Personnage
         }
         imageView = new ImageView(image);
         Box.getChildren().add(imageView);
-        //Box.setScaleX(scaleX);
-        //Box.setScaleY(scaleY);
         width = (int) (image.getWidth() * scaleX);
         height = (int) (image.getHeight() * scaleY);
-        //width = (int) (image.getWidth() * 0.05);
-        //height = (int) (image.getHeight() * 0.05);
     }
 
     /**
@@ -92,9 +88,6 @@ public class Carapace extends Personnage
         setDirection(direction);
     }
     public void move(ArrayList<Mur> murs,ArrayList<Carapace> carapaces){
-        System.out.println("Direction "+direction);
-        System.out.println("X "+getX());
-        System.out.println("Y "+getY());
         if (!isWall(murs, direction)) {
             switch (direction) {
                 case 0:

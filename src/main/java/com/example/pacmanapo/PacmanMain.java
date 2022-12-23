@@ -26,6 +26,7 @@ public class PacmanMain extends Application {
         //Carapace carapace = new Carapace(250,250,1, "rouge");
         ArrayList <Carapace> carapaces = new ArrayList<>();
         ArrayList <Mur> murs = new ArrayList<>();
+        ArrayList <Coin> coins = new ArrayList<>();
         //for (int i = 0; i < 20; i++) {
         //    murs.add(new Mur(25*i, 0));
         //    murs.add(new Mur( 25*i, 400));
@@ -50,6 +51,10 @@ public class PacmanMain extends Application {
                 if (b.getBoard()[i][j] == 1) {
                     murs.add(new Mur(25*j, 25*i));
                 }
+                else if (b.getBoard()[i][j] == 2) {
+                    coins.add(new Coin(25*j, 25*i));
+                }
+
             }
         }
         for (int i=0;i<3; i++) {
@@ -79,17 +84,20 @@ public class PacmanMain extends Application {
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
                 gc.setFill(Color.BLACK);
                 gc.fillRect(0, 0, 500, 500);
-                //System.out.println("x: " + mario.getX());
-                //System.out.println("y: " + mario.getY());
-                //System.out.println(mario.lastDirection != mario.getDirection());
-                //System.out.println(mario.isWall(murs,mario.getDirection()));
-                //System.out.println("next Direction: " + mario.nextDirection);
-                //System.out.println("Direction: " + mario.getDirection());
-               mario.move(murs, carapaces);
+                mario.move(murs, carapaces);
                 //carapace.move();
+
                 for (Carapace c : carapaces) {
                     c.move(murs, carapaces);
                     //System.out.println("Direction : "+c.getDirection());
+                }
+                for (Coin coin: coins) {
+                    //If the coordinate of the coin is the same as the coordinate of mario delete the coin
+                    if (coin.getX() == mario.getX() && coin.getY() == mario.getY()) {
+                        System.out.println("Coin");
+                        coin.hide();
+                        break;
+                    }
                 }
             }
 
@@ -103,6 +111,9 @@ public class PacmanMain extends Application {
         for (Mur mur : murs) {
             root.getChildren().add(mur.Box);
         }
+        for (Coin coin: coins) {
+            root.getChildren().add(coin.Box);
+        }
         root.getChildren().add(mario.Box);
         for (Carapace c : carapaces) {
             root.getChildren().add(c.Box);
@@ -112,8 +123,6 @@ public class PacmanMain extends Application {
         Scene scene = new Scene(root, 500, 500);
         scene.setOnKeyPressed(event -> {
             mario.handleDirection(event,murs);
-
-            //carapace.changeDirection();
             for (Carapace c : carapaces) {
                 if (c.getDirection() == -1)
                 c.changeDirection(murs);
