@@ -72,7 +72,7 @@ public class PacmanMain extends Application {
 
         var root = new Pane();
         //Draw the board
-        Canvas canvas = new Canvas(500, 500);
+        Canvas canvas = new Canvas(500, 520);
         gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0 , 500, 500);
@@ -83,7 +83,7 @@ public class PacmanMain extends Application {
             public void handle(long currentNanoTime) {
                 double t = (currentNanoTime - startNanoTime) / 1000000000.0;
                 gc.setFill(Color.BLACK);
-                gc.fillRect(0, 0, 500, 500);
+                gc.fillRect(0, 0, 500, 520);
                 mario.move(murs, carapaces);
                 //carapace.move();
 
@@ -93,12 +93,16 @@ public class PacmanMain extends Application {
                 }
                 for (Coin coin: coins) {
                     //If the coordinate of the coin is the same as the coordinate of mario delete the coin
-                    if (coin.getX() == mario.getX() && coin.getY() == mario.getY()) {
-                        System.out.println("Coin");
+                    if (coin.getX() == mario.getX() && coin.getY() == mario.getY() && !coin.isTaken) {
+                        //System.out.println("Coin");
                         coin.hide();
+                        mario.setScore(mario.getScore()+10);
                         break;
                     }
                 }
+                //Show the score
+                gc.setFill(Color.WHITE);
+                gc.fillText("Score : "+mario.getScore(), 10, 510);
             }
 
         };
@@ -108,6 +112,7 @@ public class PacmanMain extends Application {
         root.getChildren().add(canvas);
         //root.getChildren().add(carapace.Box);
         root.getChildren().add(mediaView);
+        //Add score
         for (Mur mur : murs) {
             root.getChildren().add(mur.Box);
         }
@@ -120,7 +125,7 @@ public class PacmanMain extends Application {
         }
         //root.getChildren().add(mur.Box);
 
-        Scene scene = new Scene(root, 500, 500);
+        Scene scene = new Scene(root, 500, 520);
         scene.setOnKeyPressed(event -> {
             mario.handleDirection(event,murs);
             for (Carapace c : carapaces) {

@@ -12,6 +12,8 @@ public class Coin extends Personnage{
     public int x;
     public int y;
 
+    boolean isTaken;
+
     public Coin(int x, int y){
         this.x=x;
         this.y=y;
@@ -20,11 +22,13 @@ public class Coin extends Personnage{
         Box.getChildren().add(imageView);
         width = 25;
         height = 25;
+        isTaken = false;
         setX(x);
         setY(y);
     }
 
     public void hide(){
         Box.getChildren().remove(imageView);
+        isTaken = true;
     }
 }
