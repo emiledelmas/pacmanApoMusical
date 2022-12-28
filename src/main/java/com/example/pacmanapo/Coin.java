@@ -28,6 +28,9 @@ public class Coin extends Personnage{
     }
 
     public void hide(){
+        /**
+         * This method is used to hide the coin
+         */
         Box.getChildren().remove(imageView);
         isTaken = true;
     }

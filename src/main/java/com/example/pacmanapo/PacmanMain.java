@@ -23,17 +23,10 @@ public class PacmanMain extends Application {
     public void start(Stage stage) throws IOException, InterruptedException {
         Board b = new Board(9, 9);
         Mario mario = new Mario(1, 3, 0, -1);
-        //Carapace carapace = new Carapace(250,250,1, "rouge");
         ArrayList <Carapace> carapaces = new ArrayList<>();
         ArrayList <Mur> murs = new ArrayList<>();
         ArrayList <Coin> coins = new ArrayList<>();
-        //for (int i = 0; i < 20; i++) {
-        //    murs.add(new Mur(25*i, 0));
-        //    murs.add(new Mur( 25*i, 400));
-        //}
-        //for the element in the 2D array b.getBoard()
         // Set the path to the local audio file
-        ;
         File audioFile = new File("src/main/java/com/example/pacmanapo/music.mp3");
         String audioFilePath = audioFile.toURI().toString();
         // Create a Media object using the audio file path
@@ -44,7 +37,6 @@ public class PacmanMain extends Application {
 
         // Create a MediaView object using the MediaPlayer object
         MediaView mediaView = new MediaView(mediaPlayer);
-
 
         for (int i = 0; i < b.getBoard().length; i++) {
             for (int j = 0; j < b.getBoard()[i].length; j++) {
@@ -60,36 +52,49 @@ public class PacmanMain extends Application {
         for (int i=0;i<3; i++) {
             carapaces.add(new Carapace( 1, "rouge",-1));
         }
-        //for carapace in carapaces
         int i=0;
         for (Carapace carapace : carapaces) {
             carapace.setX(225+25*i);
             carapace.setY(275);
             i++;
         }
-
-        //Mur mur = new Mur(50, 50, 0, 0);
-
+        mario.spawn();
         var root = new Pane();
+
         //Draw the board
         Canvas canvas = new Canvas(500, 520);
         gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0 , 500, 500);
-        final long startNanoTime = System.nanoTime();
-        //To fix the framerate we do:
+
         AnimationTimer timer =  new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
-                double t = (currentNanoTime - startNanoTime) / 1000000000.0;
                 gc.setFill(Color.BLACK);
                 gc.fillRect(0, 0, 500, 520);
                 mario.move(murs, carapaces);
                 //carapace.move();
 
                 for (Carapace c : carapaces) {
+                    //if mario and the carapace are less than 25 px apart, then mario loses a life and respawns
+                    if (Math.abs(mario.getX() - c.getX()) < 25 && Math.abs(mario.getY() - c.getY()) < 25) {
+                        if (mario.getLife() > 0) {
+                            mario.setLife(mario.getLife() - 1);
+                            mario.spawn();
+                            int i=0;
+                            for (Carapace carapace : carapaces) {
+                                carapace.setX(225+25*i);
+                                carapace.setY(275);
+                                i++;
+                                carapace.setDirection(-1);
+                            }
+
+                        }
+                        else {
+                            System.exit(0);
+                        }
+                    }
                     c.move(murs, carapaces);
-                    //System.out.println("Direction : "+c.getDirection());
                 }
                 for (Coin coin: coins) {
                     //If the coordinate of the coin is the same as the coordinate of mario delete the coin
@@ -123,8 +128,6 @@ public class PacmanMain extends Application {
         for (Carapace c : carapaces) {
             root.getChildren().add(c.Box);
         }
-        //root.getChildren().add(mur.Box);
-
         Scene scene = new Scene(root, 500, 520);
         scene.setOnKeyPressed(event -> {
             mario.handleDirection(event,murs);

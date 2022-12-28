@@ -4,9 +4,7 @@ package com.example.pacmanapo;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-//Import event
 import javafx.scene.input.KeyEvent;
-
 import java.util.ArrayList;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Rotate;
@@ -28,39 +26,58 @@ class Mario extends Personnage {
         this.score = score;
         this.direction = direction;
         Box.getChildren().add(imageView);
-        //Box.setScaleX(0.05952);
-        //Box.setScaleY(0.05208);
-        //Box.setScaleX(0.1);
-        //Box.setScaleY(0.1);
-        //width = (int) (i.getWidth() * 0.05952);
-        //height = (int) (i.getHeight() * 0.05208);
         width = 25;
         height = 25;
-        nextDirection = -1;
-        changingDirection = false;
-        isMarioLookingRight = true;
+        }
+
+    public void spawn(){
+        /**
+         * This method is used to spawn the player
+         */
         setX(25);
         setY(25);
+        nextDirection = -1;
+        direction = -1;
+        isMarioLookingRight = true;
+        changingDirection = false;
     }
-
-
     public int getLife() {
+        /**
+         * @return the life of the player
+         */
         return life;
     }
 
     public void setLife(int life) {
+        /**
+         * This method is used to set the life for the player
+         * @param life the life for the player
+         */
         this.life = life;
     }
 
+ 
     public int getScore() {
+     /**
+     * @return the score of the player
+     */
         return score;
     }
 
     public void setScore(int score) {
+        /**
+         * This method is used to set the score for the player
+         * @param score the score for the player
+         */
         this.score = score;
     }
 
     public void move(ArrayList<Mur> murs,ArrayList<Carapace> carapaces){
+        /**
+         * This method is used to move the player
+         * @param murs the ArrayList of the walls
+         * @param carapaces the Ararylist of the carapaces
+         */
         if (nextDirection != -1) {
             if (!isWall(murs, nextDirection)) {
                 setDirection(nextDirection);
@@ -110,7 +127,11 @@ class Mario extends Personnage {
         }
     }
     public void handleDirection(KeyEvent e, ArrayList<Mur> murs){
-        //Chefk if mario has change direction
+        /**
+         * This method is used to handle the direction of the player
+         * @param e the KeyEvent
+         * @param murs the ArrayList of the walls
+         */
         int dir = direction;
         switch (e.getCode()) {
             case UP:

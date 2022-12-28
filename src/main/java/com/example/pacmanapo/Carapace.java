@@ -43,28 +43,43 @@ public class Carapace extends Personnage
         height = (int) (image.getHeight() * scaleY);
     }
 
-    /**
-     * @return the couleur
-     */
+
     public String getCouleur()
     {
+        /**
+         * This method is used to get the color of the carapace
+         * @return the color of the carapace
+         */
         return couleur;
     }
 
-    /**
-     * @param couleur the couleur to set
-     */
     public void setCouleur(String couleur)
     {
+        /**
+         * This method is used to set the color of the carapace
+         * @param couleur the color of the carapace
+         */
         this.couleur = couleur;
     }
     public int getX() {
+        /**
+         * This method is used to get the x position of the carapace
+         * @return the x position of the carapace
+         */
         return (int) (Box.getLayoutX());
     }
     public int getY() {
+        /**
+         * This method is used to get the y position of the carapace
+         * @return the y position of the carapace
+         */
         return (int) Box.getLayoutY();
     }
     public void setX(int x) {
+        /**
+         * This method is used to set the x position of the carapace
+         * @param x the x position of the carapace
+         */
         if (x<-25){
             x=525;
         }
@@ -74,10 +89,18 @@ public class Carapace extends Personnage
         Box.setLayoutX(x);
     }
     public void setY(int y) {
+        /**
+         * This method is used to set the y position of the carapace
+         * @param y the y position of the carapace
+         */
         Box.setLayoutY(y);
     }
 
     public void changeDirection(ArrayList<Mur> murs){
+        /**
+         * This method is used to change the direction of the carapace
+         * @param murs the list of the walls
+         */
         Random rd = new Random();
         //rd.nextInt(5);
         int direction = rd.nextInt(4);
@@ -88,29 +111,29 @@ public class Carapace extends Personnage
         setDirection(direction);
     }
     public void move(ArrayList<Mur> murs,ArrayList<Carapace> carapaces){
+        /**
+         * This method is used to move the carapace
+         * @param murs the list of the walls
+         * @param carapaces the list of the carapaces
+         */
         if (!isWall(murs, direction)) {
             switch (direction) {
                 case 0:
                     //DOWN
-                    //Check if the next position is a wall
                     setY(getY() + getSpeed());
-                    //mario.setY(mario.getY() + mario.getSpeed());
                     break;
 
                 case 1:
                     //UP
                     setY(getY() - getSpeed());
-                    //mario.setY(mario.getY() - mario.getSpeed());
                     break;
                 case 2:
                     //LEFT
                     setX(getX() - getSpeed());
-                    //mario.setX(mario.getX() - mario.getSpeed());
                     break;
                 case 3:
                     //RIGHT
                     setX(getX() + getSpeed());
-                    //mario.setX(mario.getX() + mario.getSpeed());
                     break;
             }
         }
