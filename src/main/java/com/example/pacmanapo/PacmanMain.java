@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -22,7 +23,7 @@ public class PacmanMain extends Application {
     @Override
     public void start(Stage stage) throws IOException, InterruptedException {
         Board b = new Board(9, 9);
-        Mario mario = new Mario(1, 3, 0, -1);
+        Mario mario = new Mario(1, 2, 0, -1);
         ArrayList <Carapace> carapaces = new ArrayList<>();
         ArrayList <Mur> murs = new ArrayList<>();
         ArrayList <Coin> coins = new ArrayList<>();
@@ -37,6 +38,38 @@ public class PacmanMain extends Application {
 
         // Create a MediaView object using the MediaPlayer object
         MediaView mediaView = new MediaView(mediaPlayer);
+        //The same for Lost.mp3
+        File audioFile2 = new File("src/main/java/com/example/pacmanapo/Lost.mp3");
+        String audioFilePath2 = audioFile2.toURI().toString();
+        Media audio2 = new Media(audioFilePath2);
+        MediaPlayer mediaPlayer2 = new MediaPlayer(audio2);
+        MediaView mediaView2 = new MediaView(mediaPlayer2);
+        //The same for OOF.mp3
+        File audioFile3 = new File("src/main/java/com/example/pacmanapo/OOF.mp3");
+        String audioFilePath3 = audioFile3.toURI().toString();
+        Media audio3 = new Media(audioFilePath3);
+        MediaPlayer mediaPlayer3 = new MediaPlayer(audio3);
+        MediaView mediaView3 = new MediaView(mediaPlayer3);
+        //The same for coin.mp3
+        File audioFile4 = new File("src/main/java/com/example/pacmanapo/coin.mp3");
+        String audioFilePath4 = audioFile4.toURI().toString();
+        Media audio4 = new Media(audioFilePath4);
+        MediaPlayer mediaPlayer4 = new MediaPlayer(audio4);
+        MediaView mediaView4 = new MediaView(mediaPlayer4);
+        //The same for UP.mp3
+        File audioFile5 = new File("src/main/java/com/example/pacmanapo/UP.mp3");
+        String audioFilePath5 = audioFile5.toURI().toString();
+        Media audio5 = new Media(audioFilePath5);
+        MediaPlayer mediaPlayer5 = new MediaPlayer(audio5);
+        MediaView mediaView5 = new MediaView(mediaPlayer5);
+        //set down the volume
+        mediaPlayer5.setVolume(0.3);
+
+        //Import heart.png
+        Image heart = new Image("file:src/main/java/com/example/pacmanapo/heart.png");
+
+
+
 
         for (int i = 0; i < b.getBoard().length; i++) {
             for (int j = 0; j < b.getBoard()[i].length; j++) {
@@ -65,19 +98,29 @@ public class PacmanMain extends Application {
         Canvas canvas = new Canvas(500, 520);
         gc = canvas.getGraphicsContext2D();
         gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0 , 500, 500);
+        gc.fillRect(0, 0 , 500, 520);
+        Canvas blackScreen = new Canvas(500, 520);
+        GraphicsContext gc2 = blackScreen.getGraphicsContext2D();
+        gc2.setFill(Color.BLACK);
+        gc2.fillRect(0, 0 , 500, 520);
+        //Add gameover text
+        gc2.setFill(Color.WHITE);
+        gc2.fillText("GAME OVER", 200, 250);
 
         AnimationTimer timer =  new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
                 gc.setFill(Color.BLACK);
-                gc.fillRect(0, 0, 500, 520);
+                gc.fillRect(0, 0 , 500, 520);
                 mario.move(murs, carapaces);
                 //carapace.move();
 
                 for (Carapace c : carapaces) {
                     //if mario and the carapace are less than 25 px apart, then mario loses a life and respawns
                     if (Math.abs(mario.getX() - c.getX()) < 25 && Math.abs(mario.getY() - c.getY()) < 25) {
+                        mediaPlayer3.stop();
+                        mediaPlayer3.play();
+
                         if (mario.getLife() > 0) {
                             mario.setLife(mario.getLife() - 1);
                             mario.spawn();
@@ -88,10 +131,13 @@ public class PacmanMain extends Application {
                                 i++;
                                 carapace.setDirection(-1);
                             }
-
                         }
                         else {
-                            System.exit(0);
+                            //Show black screen
+                            //Wait 0.5 seconds
+                            blackScreen.setVisible(true);
+                            mediaPlayer.stop();
+                            mediaPlayer2.play();
                         }
                     }
                     c.move(murs, carapaces);
@@ -100,6 +146,20 @@ public class PacmanMain extends Application {
                     //If the coordinate of the coin is the same as the coordinate of mario delete the coin
                     if (coin.getX() == mario.getX() && coin.getY() == mario.getY() && !coin.isTaken) {
                         //System.out.println("Coin");
+                        //If mediaPlayer4 just stop playing, stop it and increase the pitch
+                        mediaPlayer4.stop();
+                        if (mediaPlayer4.getRate() < 1.5) {
+                            mediaPlayer4.setRate(mediaPlayer4.getRate() + 0.05);
+                        }
+                        else {
+                            mediaPlayer5.stop();
+                            mediaPlayer5.play();
+                            mediaPlayer4.setRate(1);
+                        }
+                        //mediaPlayer4.stop();
+                        //Pitch up the mediaPlayer4 sound every time
+                        //mediaPlayer4.setRate(mediaPlayer4.getRate() + 0.05);
+                        mediaPlayer4.play();
                         coin.hide();
                         mario.setScore(mario.getScore()+10);
                         break;
@@ -108,6 +168,14 @@ public class PacmanMain extends Application {
                 //Show the score
                 gc.setFill(Color.WHITE);
                 gc.fillText("Score : "+mario.getScore(), 10, 510);
+
+
+                //Show the life with heart.png
+                for (int i=0; i<mario.getLife()+1; i++) {
+                    //scale the image 25x25
+                    gc.drawImage(heart, 80+25*i, 498, 25, 25);
+                }
+
             }
 
         };
@@ -128,6 +196,11 @@ public class PacmanMain extends Application {
         for (Carapace c : carapaces) {
             root.getChildren().add(c.Box);
         }
+        //Create black screen
+
+        root.getChildren().add(blackScreen);
+        //hide it
+        blackScreen.setVisible(false);
         Scene scene = new Scene(root, 500, 520);
         scene.setOnKeyPressed(event -> {
             mario.handleDirection(event,murs);
@@ -140,6 +213,7 @@ public class PacmanMain extends Application {
         stage.setScene(scene);
         stage.show();
         mediaPlayer.play();
+
     }
     public static void main(String[] args) {
         launch(args);
