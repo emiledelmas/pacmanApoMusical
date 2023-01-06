@@ -65,6 +65,21 @@ public class PacmanMain extends Application {
         //set down the volume
         mediaPlayer5.setVolume(0.3);
 
+        //Import intro.mp4 as a video to show in the beginning of the game
+        File videoFile = new File("src/main/java/com/example/pacmanapo/nintendo.mp4");
+        String videoFilePath = videoFile.toURI().toString();
+        Media video = new Media(videoFilePath);
+        MediaPlayer mediaPlayerVideo = new MediaPlayer(video);
+        MediaView mediaViewVideo = new MediaView(mediaPlayerVideo);
+        //Set the size of the video
+        mediaViewVideo.setFitWidth(500);
+        mediaViewVideo.setFitHeight(500);
+        //Set the position of the video
+        mediaViewVideo.setX(0);
+        mediaViewVideo.setY(0);
+        //Set the volume of the video
+        mediaPlayerVideo.setVolume(2);
+
         //Import heart.png
         Image heart = new Image("file:src/main/java/com/example/pacmanapo/heart.png");
 
@@ -212,7 +227,19 @@ public class PacmanMain extends Application {
         stage.setTitle("PACMARIO");
         stage.setScene(scene);
         stage.show();
-        mediaPlayer.play();
+        //Show the intro video
+        mediaPlayerVideo.play();
+        root.getChildren().add(mediaViewVideo);
+        //Hide the video when it's done
+        mediaPlayerVideo.setOnEndOfMedia(new Runnable() {
+            public void run() {
+                //Hide the video
+                root.getChildren().remove(mediaViewVideo);
+                mediaPlayer.play();
+            }
+        });
+
+
 
     }
     public static void main(String[] args) {
