@@ -65,6 +65,13 @@ public class PacmanMain extends Application {
         //set down the volume
         mediaPlayer5.setVolume(0.3);
 
+        //Same for winSound.mp3
+        File audioFile6 = new File("src/main/java/com/example/pacmanapo/winSound.mp3");
+        String audioFilePath6 = audioFile6.toURI().toString();
+        Media audio6 = new Media(audioFilePath6);
+        MediaPlayer mediaPlayer6 = new MediaPlayer(audio6);
+        MediaView mediaView6 = new MediaView(mediaPlayer6);
+
         //Import intro.mp4 as a video to show in the beginning of the game
         File videoFile = new File("src/main/java/com/example/pacmanapo/nintendo.mp4");
         String videoFilePath = videoFile.toURI().toString();
@@ -82,8 +89,8 @@ public class PacmanMain extends Application {
 
         //Import heart.png
         Image heart = new Image("file:src/main/java/com/example/pacmanapo/heart.png");
-
-
+        final int[] nbCoins = {0};
+        int nbTotal = 0;
 
 
         for (int i = 0; i < b.getBoard().length; i++) {
@@ -93,6 +100,7 @@ public class PacmanMain extends Application {
                 }
                 else if (b.getBoard()[i][j] == 2) {
                     coins.add(new Coin(25*j, 25*i));
+                    nbTotal++;
                 }
 
             }
@@ -119,9 +127,8 @@ public class PacmanMain extends Application {
         gc2.setFill(Color.BLACK);
         gc2.fillRect(0, 0 , 500, 520);
         //Add gameover text
-        gc2.setFill(Color.WHITE);
-        gc2.fillText("GAME OVER", 200, 250);
 
+        int finalNbTotal = nbTotal;
         AnimationTimer timer =  new AnimationTimer() {
             @Override
             public void handle(long currentNanoTime) {
@@ -135,7 +142,7 @@ public class PacmanMain extends Application {
                     if (Math.abs(mario.getX() - c.getX()) < 25 && Math.abs(mario.getY() - c.getY()) < 25) {
                         mediaPlayer3.stop();
                         mediaPlayer3.play();
-
+                        //If all the coins are collected, then the game is won
                         if (mario.getLife() > 0) {
                             mario.setLife(mario.getLife() - 1);
                             mario.spawn();
@@ -151,6 +158,8 @@ public class PacmanMain extends Application {
                             //Show black screen
                             //Wait 0.5 seconds
                             blackScreen.setVisible(true);
+                            gc2.setFill(Color.WHITE);
+                            gc2.fillText("GAME OVER", 200, 250);
                             mediaPlayer.stop();
                             mediaPlayer2.play();
                         }
@@ -160,6 +169,8 @@ public class PacmanMain extends Application {
                 for (Coin coin: coins) {
                     //If the coordinate of the coin is the same as the coordinate of mario delete the coin
                     if (coin.getX() == mario.getX() && coin.getY() == mario.getY() && !coin.isTaken) {
+                        nbCoins[0]++;
+
                         //System.out.println("Coin");
                         //If mediaPlayer4 just stop playing, stop it and increase the pitch
                         mediaPlayer4.stop();
@@ -177,6 +188,19 @@ public class PacmanMain extends Application {
                         mediaPlayer4.play();
                         coin.hide();
                         mario.setScore(mario.getScore()+10);
+                    if (finalNbTotal == nbCoins[0]) {
+                        blackScreen.setVisible(true);
+                        gc2.setFill(Color.WHITE);
+                        gc2.fillText("YOU WIN", 200, 250);
+                        mediaPlayer.stop();
+                        mediaPlayer2.stop();
+                        mediaPlayer3.stop();
+                        mediaPlayer4.stop();
+                        mediaPlayer5.stop();
+                        mediaPlayerVideo.stop();
+                        mediaPlayer6.play();
+                        this.stop();
+                    }
                         break;
                     }
                 }
